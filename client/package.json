@@ -1,6 +1,6 @@
 {
   "homepage": "http://{justin-chinedu}.github.io/{ispor_editorial}",
-  "name": "Ispor Editorial",
+  "name": "ispor_editorial",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -9,7 +9,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@emotion/styled": "^11.10.6",

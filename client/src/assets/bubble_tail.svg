@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   version="1.1"
+   id="svg2"
+   width="16"
+   height="15.999999"
+   viewBox="0 0 16 16"
+   sodipodi:docname="ISPOR News &amp; Gist.pdf"
+   xml:space="preserve"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+     id="defs6" /><sodipodi:namedview
+     id="namedview4"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="true"><inkscape:grid
+       type="xygrid"
+       id="grid12368" /></sodipodi:namedview><g
+     id="g8"
+     inkscape:groupmode="layer"
+     inkscape:label="ISPOR News &amp; Gist"
+     transform="matrix(1.3333333,0,0,1.3333333,-30,-219.99997)"><path
+       style="fill:#2c3440;fill-opacity:1;stroke-width:5.99065;stroke-linecap:round"
+       d="m 22.500001,164.99998 h 12 v 12 z"
+       id="path12424"
+       inkscape:export-filename="..\..\..\..\Projects\ispor_editorial\client\src\assets\bubble_tail.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" /></g></svg>

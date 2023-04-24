@@ -2,6 +2,7 @@ import { PostgrestError } from "@supabase/supabase-js";
 import { Question } from "../models/question";
 import client from "../services/supabase";
 import keyword_extractor from "keyword-extractor";
+import { fullStopWords } from "../../core/stopwords";
 
 interface QuestionDaoI {
     addQuestion(question: Question): Promise<number | PostgrestError | null>;
@@ -18,6 +19,7 @@ class QuestionDao implements QuestionDaoI {
                 remove_digits: true,
                 return_changed_case: true,
                 remove_duplicates: true,
+                stopwords: fullStopWords
             });
 
         let result = await client.from('questions').insert({ ...question, keywords, verified });

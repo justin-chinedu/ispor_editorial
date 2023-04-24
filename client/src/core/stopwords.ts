@@ -1,4 +1,4 @@
-const fullStopWords = [
+export const fullStopWords = [
     //Custom stop words
     "service",
     "services",

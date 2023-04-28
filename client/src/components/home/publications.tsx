@@ -135,15 +135,15 @@ const BooksSection = (props: {
 
                 {/* Account Details */}
 
-                <div className={"flex gap-x-6 rounded-lg bg-white/10 transition-all duration-1000 delay-100 " + (orderInfo ? "m-6 p-4 opacity-100" : "h-0 opacity-0")}>
+                <div className={"flex justify-center flex-wrap gap-x-6 rounded-lg bg-white/10 transition-all duration-1000 delay-100 " + (orderInfo ? "m-6 p-4 opacity-100" : "h-0 opacity-0")}>
                     {
                         orderInfo?.details && purchaseInfo ?
                             <>
                                 <div className="min-w-[128px] overflow-clip shadow-md shadow-gray-700 mb-4 flex flex-col items-center justify-center h-[180px] bg-gray-800/75 rounded-lg">
-                                    <img className=" object-cover" src={orderInfo.details.cover} alt={orderInfo.details.title} />
+                                    <img className=" object-cover" src={'.' + orderInfo.details.cover} alt={orderInfo.details.title} />
                                 </div>
 
-                                <div className="flex flex-col gap-y-2 text-primary-color">
+                                <div className="flex grow flex-col gap-y-2 text-primary-color">
                                     <p className="font-semibold">{orderInfo.details.title}</p>
                                     <p className="text-xs">Send {purchaseInfo.price} To</p>
                                     <hr className="my-2" />
@@ -192,10 +192,10 @@ const BookCard = (props: { book: BookInfo }) => {
                 ) : (
                     <div className="w-32">
                         <div className="overflow-clip shadow-md shadow-gray-700 mb-4 flex flex-col items-center justify-center h-[180px] bg-gray-800/75 rounded-lg">
-                            <img className="object-cover" src={details.cover} alt={details.title} />
+                            <img className="object-cover" src={"." + details.cover} alt={details.title} />
                         </div>
                         <p className="text-xs text-white/70 font-light text-center mb-2">{props.book.edition} Edition</p>
-                        <a download={true} href={details.purchaseInfo ? undefined : details.link} onClick={details.purchaseInfo ? () => onPreOrderClicked(props.book) : undefined} className="mx-auto block text-sm text-white font-normal text-center hover:underline select-none">{details.purchaseInfo ? 'Pre Order' : 'Download'}</a>
+                        <a download={true} href={details.purchaseInfo ? undefined : '.' + details.link} onClick={details.purchaseInfo ? () => onPreOrderClicked(props.book) : undefined} className="mx-auto block text-sm text-white font-normal text-center hover:underline select-none">{details.purchaseInfo ? 'Pre Order' : 'Download'}</a>
                     </div>)
             }
 

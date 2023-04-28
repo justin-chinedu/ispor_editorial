@@ -2,9 +2,9 @@ import ng_first from "../../assets/ng_first.png";
 import ng_second from "../../assets/ng_second.webp";
 import dzine_2022 from "../../assets/dzine_2022.webp";
 import year_book_2022 from "../../assets/year_book_2022.webp";
-import ng_first_file from "../../assets/publications/ISPOR N&G 1st Edition.pdf";
-import ng_second_file from "../../assets/publications/ISPOR N&G 2nd Edition.pdf";
-import dzine_mh_file from "../../assets/publications/Ispor Dzine - Mental Health.pdf";
+import ng_first_file from "../../assets/publications/ispor_ng_1st.pdf";
+import ng_second_file from "../../assets/publications/ispor_ng_2nd.pdf";
+import dzine_mh_file from "../../assets/publications/ispor_dzine_mh.pdf";
 
 import { BookInfo } from "./book_info"
 

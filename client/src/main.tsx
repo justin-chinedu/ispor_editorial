@@ -4,11 +4,16 @@ import App from './App'
 import './index.css'
 import { Provider } from 'react-redux'
 import { store } from './store'
+import { enableMapSet } from 'immer'
+import { HashRouter } from 'react-router-dom'
+
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <HashRouter >
+        <App />
+      </HashRouter>
     </Provider>
   </React.StrictMode>,
 )

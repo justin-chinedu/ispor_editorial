@@ -5,6 +5,7 @@ import { AppBar } from "../app_bar"
 import { useEffect, useState } from "react"
 import { About } from "./about"
 import { SITE_PROTOCOL } from "../../core/constants"
+import { HashLink as Link } from 'react-router-hash-link';
 
 export const Jumbotron = () => {
     const [aboutIsVisible, setAboutIsVisible] = useState(false);
@@ -15,12 +16,12 @@ export const Jumbotron = () => {
 
             <div className="relative h-[280px] sm:h-[420px] bg-gradient-radial  from-white via-primary-color  to-primary-color from-5%">
 
-                <About className={"absolute inset-0 transition-all duration-1000 z-50 " + (aboutIsVisible ? "translate-x-0 opacity-100" : "-translate-y-1/2 opacity-0")} />
+                <About className={"absolute inset-0 transition-all duration-1000 " + (aboutIsVisible ? "z-10 translate-x-0 opacity-100" : "z-0 -translate-y-1/2 opacity-0")} />
 
-                <div className={"absolute inset-0 z-0 flex transition duration-1000 h-full w-full " + (aboutIsVisible ? "-translate-x-1/2 opacity-0 " : "translate-x-0 opacity-100")}>
+                <div className={"absolute inset-0 flex transition duration-1000 h-full w-full " + (aboutIsVisible ? "z-0 -translate-x-1/2 opacity-0 " : "z-10 translate-x-0 opacity-100")}>
                     {/* Content */}
                     <div className="basis-1/2 flex flex-col gap-y-6 ml-6 md:ml-12 pr-6 sm:items-center justify-center">
-                        <img src={anon_text} alt="Anonymous Consultant Logo" className="w-full h-fit" />
+                        <img src={'.' + anon_text} alt="Anonymous Consultant Logo" className="w-full h-fit" />
                         <div className="w-fit min-[500px]:self-center">
                             {/* Ask Button */}
                             <AskButton />
@@ -28,7 +29,7 @@ export const Jumbotron = () => {
                         </div>
                     </div>
                     <div className="basis-1/2 relative">
-                        <img src={anon_pic} alt="" className="max-w-[200px] sm:max-w-none h-full object-contain object-bottom absolute md:right-1/3  right-0 bottom-0 " />
+                        <img src={'.' + anon_pic} alt="" className="max-w-[200px] sm:max-w-none h-full object-contain object-bottom absolute md:right-1/3  right-0 bottom-0 " />
                     </div>
                 </div>
 
@@ -85,11 +86,12 @@ const AskButton = () => {
     const url = SITE_PROTOCOL + window.location.host;
 
     return (
-        <a href={url + "/#input-question"} className="block bg-secondary-color hover:bg-secondary-color/70 py-2 px-4 rounded-lg w-fit ">
+
+        <Link to={"/#input-question"} className="block bg-secondary-color hover:bg-secondary-color/70 py-2 px-4 rounded-lg w-fit ">
             <div className="flex items-center gap-x-2 ">
                 <p className="text-primary-color font-light text-sm">Ask Those ?'s</p>
                 <DoubleArrow fontSize={"small"} className="text-primary-color text-xs" />
             </div>
-        </a>
+        </Link>
     );
 }

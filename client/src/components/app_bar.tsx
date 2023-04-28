@@ -1,8 +1,10 @@
 import Menu from "@mui/icons-material/Menu"
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 
 export const AppBar = (props: { onToggleOpen?: (isOpen: boolean) => void }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (props.onToggleOpen) {
@@ -15,11 +17,11 @@ export const AppBar = (props: { onToggleOpen?: (isOpen: boolean) => void }) => {
     }
 
     return (
-        <div className="z-20 h-14 w- bg-primary-color flex items-center sticky top-0 sm:relative">
+        <div className="z-30 h-14 bg-primary-color flex items-center sticky top-0 sm:relative">
             <div onClick={toggleOpen} className={"sm:hidden mx-4 hover:bg-gray-500/20 rounded-full p-1 transition-all duration-1000 " + (isOpen ? "rotate-90" : "rotate-0")}>
                 <Menu fontSize="medium" className="" />
             </div>
-            <p className="sm:pl-6">
+            <p onClick={() => navigate('/')} className="sm:pl-6">
                 <span className="text-xl font-bold">ISPOR </span>
                 <span className="text-xl">Editorial</span>
             </p>

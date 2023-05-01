@@ -2,6 +2,8 @@ import { Answer } from "../models/answer";
 import { Question } from "../models/question";
 
 export type OrderByFilter = { by: "created_at", order: "asc" | "desc" }
+export type RelevanceFilter = { by: "upvotes" | "downvotes", order: "asc" | "desc" }
+
 export type KeywordFilter = string | null
 export type RangeFilter = { from: number, to: number }
 
@@ -25,6 +27,8 @@ export type QuestionFilter = {
     order_by?: OrderByFilter,
     keyword?: KeywordFilter,
     verified?: boolean,
+    relevance?: RelevanceFilter
+    section_ids ?: number[]
 }
 
 export type QuestionFilterKeys = keyof QuestionFilter;

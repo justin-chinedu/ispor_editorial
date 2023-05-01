@@ -13,7 +13,7 @@ export const About = (props: React.BaseHTMLAttributes<{}>) => {
             <div className="flex gap-x-2">
                 {
                     allBookSections.map(section => (
-                        <Link to={"/#" + section.id} key={section.id} className="text-[10px] font-semibold text-center bg-white/10 hover:bg-white/50 text-secondary-color border border-secondary-color/20 p-1 rounded">{section.title}</Link>
+                        <Link to={"/#" + section.id} key={section.id} className="text-[10px] font-semibold text-center bg-white/10 hover:active:bg-white/50 text-secondary-color border border-secondary-color/20 p-1 rounded">{section.title}</Link>
                     ))
                 }
             </div>

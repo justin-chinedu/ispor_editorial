@@ -1,20 +1,18 @@
-import { useSelector } from "react-redux";
 import { Question } from "../../domain/models/question";
-import { RootState, useAppDispatch } from "../../store";
+import { useAppDispatch } from "../../store";
 import { fetchAnswersForQuestion, setUpQuestion } from "./question_answers_slice";
 import { useEffect, useState } from "react";
-import { QuestionAnswerBubble } from "../questions/question_answer_bubble";
+import { QABubblePlaceHolder, QuestionAnswerBubble } from "../questions/question_answer_bubble";
 import InfoRounded from "@mui/icons-material/InfoRounded";
 import MessageRounded from "@mui/icons-material/MessageRounded";
-import DownloadRounded from "@mui/icons-material/DownloadRounded";
-import UploadRounded from "@mui/icons-material/UploadRounded";
 import VisibilityRounded from "@mui/icons-material/VisibilityRounded";
 import { AnswerForm } from "../answers/answer_form";
-import { AnswerFilter, RangeFilter } from "../../domain/dao/filter";
+import { RangeFilter } from "../../domain/dao/filter";
 import { answerFilterSections, sectionsToAnswerFilter } from "../filters/filters";
 import { FilterFrame } from "../filters/filter_frame";
 import { FilterButton } from "../filters/filter_button";
-import { jprint } from "../../core/utils";
+import { useQuestionSelector } from "../../hooks/question_hooks";
+import { VoteButtons } from "./vote_buttons";
 
 export const QuestionAnswers = ({ question }: { question: Question }) => {
     const dispatch = useAppDispatch();
@@ -27,11 +25,7 @@ export const QuestionAnswers = ({ question }: { question: Question }) => {
 
     const answersFilter = { range, ...sectionsToAnswerFilter(filterSections, question.id!) }
 
-    const questionState = useSelector((state: RootState) => {
-        if (question.id && question.id in state.question_answers) {
-            return state.question_answers[question.id];
-        }
-    });
+    const questionState = useQuestionSelector(question);
 
     useEffect(() => {
         if (questionState == undefined) {
@@ -68,25 +62,23 @@ export const QuestionAnswers = ({ question }: { question: Question }) => {
             <QuestionAnswerBubble answerCount={answers.length} question_or_answer={question} />
 
             {/* Vote and Answer Buttons */}
-            <div className="flex justify-end text-white items-center">
-                <button type="button" className="mr-2 text-emerald-200">
-                    <UploadRounded fontSize="inherit" /> {677}
-                </button>
-                <button type="button" className="mr-6 text-red-200">
-                    <DownloadRounded fontSize="inherit" /> {78}
-                </button>
+            <div className="flex justify-end gap-x-4 text-white items-center">
+                <VoteButtons question={question} />
                 {/* Answer Button */}
-                <button type="button" onClick={() => setFormIsVisible(s => !s)} className="text-lg text-white flex justify-end items-center gap-x-2 hover:bg-slate-700/50 rounded-lg w-fit p-2">
+                <button type="button" onClick={() => setFormIsVisible(s => !s)} className="text-lg text-white flex justify-end items-center gap-x-2 hover:active:bg-slate-700/50 rounded-lg w-fit p-2">
                     {formIsVisible ? <VisibilityRounded fontSize="inherit" /> : <MessageRounded fontSize="inherit" />}
-                    <p className="text-[12px]">{formIsVisible ? "Show Only Answers" : "Answer Question"}</p>
+                    <p className="text-[12px]">{formIsVisible ? "Show Answers" : "Answer Question"}</p>
                 </button>
             </div>
 
             {/*All Answers */}
             {
                 isLoading ?
-                    <p className="my-4 text-white text-center">Loading Answers...</p>
-                    :
+                    <div className="animate-pulse flex flex-col gap-y-4">
+                        {
+                            [...Array(3).keys()].map((_, i) => <QABubblePlaceHolder reverse key={i} />)
+                        }
+                    </div> :
                     ((isSuccess || isIdle) ?
                         <>
                             {
@@ -126,7 +118,7 @@ export const QuestionAnswers = ({ question }: { question: Question }) => {
                                     <span className={"text-red-200/80 mr-2 text-sm"}>{<InfoRounded fontSize="small" />}</span>
                                     <span className={"text-red-200/80 text-sm"}>{"Error fetching answers"}</span>
                                 </div>
-                                <button onClick={() => dispatch(fetchAnswersForQuestion(answersFilter))} className="bg-red-200/80 hover:bg-red-300/80  text-gray-700 py-2 px-4 rounded-lg text-sm" type="button"> Retry</button>
+                                <button onClick={() => dispatch(fetchAnswersForQuestion(answersFilter))} className="bg-red-200/80 hover:active:bg-red-300/80  text-gray-700 py-2 px-4 rounded-lg text-sm" type="button"> Retry</button>
                             </div> : null
                     )
             }
@@ -135,23 +127,4 @@ export const QuestionAnswers = ({ question }: { question: Question }) => {
 
 }
 
-export const VoteButtons = ({question}: {question: Question}) => {
-    const questionState = useSelector((state: RootState) => {
-        if (question.id && question.id in state.question_answers) {
-            return state.question_answers[question.id];
-        }
-    });
-    const dispatch = useAppDispatch();
 
-
-    return (
-        <div className="flex gap-x-2 items-center">
-            <button type="button" className=" text-emerald-200">
-                <UploadRounded fontSize="inherit" /> {question.upvotes}
-            </button>
-            <button type="button" className=" text-red-200">
-                <DownloadRounded fontSize="inherit" /> {question.downvotes}
-            </button>
-        </div>
-    )
-}

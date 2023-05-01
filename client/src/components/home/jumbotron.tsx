@@ -25,7 +25,7 @@ export const Jumbotron = () => {
                         <div className="w-fit min-[500px]:self-center">
                             {/* Ask Button */}
                             <AskButton />
-                            <TimerText endTime="2023-05-01T06:00:00.000+01:00" />
+                            <TimerText endTime="2023-05-20T06:00:00.000+01:00" />
                         </div>
                     </div>
                     <div className="basis-1/2 relative">
@@ -74,7 +74,7 @@ const TimerText = (props: React.HTMLAttributes<{}> & { endTime?: string }) => {
         <div>
             <p className="mx-auto w-fit mt-2 text-center">
                 <span className="font-bold text-lg">{time}</span>
-                <span className="text-sm block">left till answers</span>
+                <span className="text-sm block">left till publication</span>
                 <span className="block text-xs font-semibold self-center mt-4">{"Health\u30FBISPOR"}</span>
             </p >
         </div>
@@ -87,9 +87,9 @@ const AskButton = () => {
 
     return (
 
-        <Link to={"/#input-question"} className="block bg-secondary-color hover:bg-secondary-color/70 py-2 px-4 rounded-lg w-fit ">
+        <Link to={"/anonymous"} className="block bg-secondary-color hover:active:bg-secondary-color/70 py-2 px-4 rounded-lg w-fit ">
             <div className="flex items-center gap-x-2 ">
-                <p className="text-primary-color font-light text-sm">Ask Those ?'s</p>
+                <p className="text-primary-color font-light text-sm">See Questions</p>
                 <DoubleArrow fontSize={"small"} className="text-primary-color text-xs" />
             </div>
         </Link>

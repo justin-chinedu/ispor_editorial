@@ -14,19 +14,19 @@ interface AnswersDaoI {
 
 class AnswersDao implements AnswersDaoI {
     async fetchAnswersForQuestion(filter: AnswerFilter): Promise<Answer[]> {
-        return Promise.resolve(mockAnswers);
+        // return Promise.resolve(mockAnswers);
 
-        // let builder = client.from('answers')
-        //     .select<"*", Answer>("*");
+        let builder = client.from('answers')
+            .select<"*", Answer>("*");
 
-        // builder = this.applyFilter(builder, filter);
-        // const resp = await builder;
+        builder = this.applyFilter(builder, filter);
+        const resp = await builder;
 
-        // if (resp.error) {
-        //     throw resp.error;
-        // } else {
-        //     return resp.data;
-        // }
+        if (resp.error) {
+            throw resp.error;
+        } else {
+            return resp.data;
+        }
     }
 
     applyFilter(builder: PostgrestFilterBuilder<GenericSchema, Record<AnswerColumns, AnswerValues>, Answer[]>, filter: AnswerFilter) {

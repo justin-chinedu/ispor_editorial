@@ -78,11 +78,11 @@ export const AnswerForm = (props: { answerFilter: AnswerFilter, question: Questi
         <div className="w-full pb-8">
             <form className="w-full flex flex-col gap-y-4 " action="">
                 <textarea value={answer} onChange={handleInput} className="min-h-[8rem] max-h-32 h-24 bg-gray-700/60 appearance-none border border-transparent focus:border-primary-color/50 rounded-lg w-full py-4 px-4 text-primary-color placeholder:text-white/70 leading-tight focus:outline-none focus:shadow-outline text-sm" placeholder="My Answer Is ..." name="Question" id="input-answer" />
-                <label title="Username" className="text-xs font-light text-white/90">{"Your Anonymous Name (Edit Or Save)"}</label>
+                <label title="Username" className="text-xs font-light text-white/90">{"Your Anonymous Name"}</label>
                 <UsernameInput key={"name_input"} onChange={name => setUsername(name)} />
 
                 {disabled ? null : <p className="text-xs font-light text-white/90">Note : Answers would be screened before approval</p>}
-                <button disabled={disabled} type="button" onClick={handleSubmit} className={`${formState.uploadState === "success" && buttonText != "Answer Anonymously" ? "bg-emerald-500" : "bg-slate-700/40"} py-2 px-4 rounded-lg ${disabled ? "opacity-60" : "hover:bg-slate-700"}`}>
+                <button disabled={disabled} type="button" onClick={handleSubmit} className={`${formState.uploadState === "success" && buttonText != "Answer Anonymously" ? "bg-emerald-500" : "bg-slate-700/40"} py-2 px-4 rounded-lg ${disabled ? "opacity-60" : "hover:active:bg-slate-700"}`}>
                     <div className={`flex items-center gap-x-2 justify-center ${formState.uploadState === "success" ? "text-white" : "text-primary-color"}`}>
                         <p className="text-sm">{buttonText}</p>
                         {formState.uploadState == "processing"
@@ -147,16 +147,18 @@ export const UsernameInput = (props: { onChange: (name: string) => void }) => {
     }
 
     return (
-        < div className="flex gap-x-4 items-center" >
+        < div className="flex gap-x-3 items-center" >
             <Person className="text-white" />
-            <input onChange={handleUsernameInput} value={username} className="min-w-[24px] bg-gray-700/60 appearance-none border border-transparent focus:border-primary-color/50 rounded-lg w-full py-3 px-2 text-primary-color placeholder:text-white/70 leading-tight focus:outline-none focus:shadow-outline text-xs" placeholder="Your Anonymous name" type="text" name="User Name" id="username" title="User name" />
-            <button onClick={() => generateName()} type="button" className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg py-2 px-4">
-                <p className="text-xs">Generate</p>
-            </button>
+            <input onChange={handleUsernameInput} value={username} className="min-w-[28px] bg-gray-700/60 appearance-none border border-transparent focus:border-primary-color/50 rounded-lg w-full py-3 px-2 text-primary-color placeholder:text-white/70 leading-tight focus:outline-none focus:shadow-outline text-xs" placeholder="Your Anonymous name" type="text" name="User Name" id="username" title="User name" />
+            < div className="flex gap-x-1.5 items-center" >
+                <button onClick={() => generateName()} type="button" className="bg-emerald-600 hover:active:bg-emerald-700 text-white rounded-lg py-2 px-4">
+                    <p className="text-xs">Generate</p>
+                </button>
 
-            <button disabled={nameIsSaved} onClick={() => saveName(username.trim())} type="button" className={"text-white rounded-lg py-2 px-4 " + (nameIsSaved ? " bg-slate-700" : "bg-emerald-600 hover:bg-emerald-700")}>
-                <p className="text-xs">{nameIsSaved ? "Saved" : "Save"}</p>
-            </button>
+                <button disabled={nameIsSaved} onClick={() => saveName(username.trim())} type="button" className={"text-white rounded-lg py-2 px-4 " + (nameIsSaved ? " bg-slate-700" : "bg-emerald-600 hover:active:bg-emerald-700")}>
+                    <p className="text-xs">{nameIsSaved ? "Saved" : "Save"}</p>
+                </button>
+            </div>
         </div >
     )
 }

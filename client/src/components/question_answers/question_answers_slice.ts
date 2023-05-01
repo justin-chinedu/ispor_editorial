@@ -4,7 +4,8 @@ import { Question } from "../../domain/models/question"
 import answersDao from "../../domain/dao/answers_dao";
 import { AnswerFilter } from "../../domain/dao/filter";
 import { RequestState, RequestType } from "../../core/request_state";
-import { jprint } from "../../core/utils";
+import { deleteVotedQuestionFromLocal, fetchVotedQuestionsFromLocal, jprint, saveVotedQuestionToLocal } from "../../core/utils";
+import questionDao from "../../domain/dao/questions_dao";
 
 type QuestionState = {
     question?: Question,
@@ -18,10 +19,39 @@ type State = {
 
 const initialState: State = {};
 
-export const fetchAnswersForQuestion = createAsyncThunk('question_answers/fetch_answers', async ( filter: AnswerFilter , thunkApi) => {
+export const fetchAnswersForQuestion = createAsyncThunk('question_answers/fetch_answers', async (filter: AnswerFilter, thunkApi) => {
     try {
         const answers = await answersDao.fetchAnswersForQuestion(filter);
         return answers;
+    } catch (error) {
+        return Promise.reject(error)
+    }
+});
+
+export const voteQuestion = createAsyncThunk('question_answers/vote_question', async (arg: { question: Question, isUpvote: boolean }, thunkApi) => {
+    try {
+        const saved = fetchVotedQuestionsFromLocal();
+        const id = arg.question.id!;
+        let q: Question;
+        if (arg.isUpvote) {
+            if (saved.upvoted.includes(id)) {
+                q = await questionDao.upvoteQuestion(arg.question, false);
+                deleteVotedQuestionFromLocal(id, true);
+            } else {
+                q = await questionDao.upvoteQuestion(arg.question, true);
+                saveVotedQuestionToLocal(id, true);
+            }
+        } else {
+            if (saved.downvoted.includes(id)) {
+                q = await questionDao.downvoteQuestion(arg.question, false);
+                deleteVotedQuestionFromLocal(id, false);
+            } else {
+                q = await questionDao.downvoteQuestion(arg.question, true);
+                saveVotedQuestionToLocal(id, false);
+            }
+        }
+        jprint(q)
+        return q;
     } catch (error) {
         return Promise.reject(error)
     }
@@ -65,6 +95,11 @@ export const questionAnswersSlice = createSlice(
                     s.answers_state.data = action.payload;
                 } else {
                     s.answers_state.data = [...s.answers_state.data, ...action.payload];
+                }
+            }).addCase(voteQuestion.fulfilled, (state, action) => {
+                const s = state[action.payload.id!];
+                if (s) {
+                    s.question = action.payload;
                 }
             });
         }

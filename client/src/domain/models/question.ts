@@ -5,6 +5,7 @@ export interface Question {
     verified?: boolean,
     keywords: string[],
     id?: number,
+    section_id?: number,
     upvotes: number,
     downvotes: number,
 }

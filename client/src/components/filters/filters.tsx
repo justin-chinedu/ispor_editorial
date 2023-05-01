@@ -1,6 +1,7 @@
 import TimerRounded from "@mui/icons-material/TimerRounded"
 import VerifiedRounded from "@mui/icons-material/VerifiedRounded"
-import { AnswerFilter, AnswerFilterKeys, OrderByFilter, QuestionFilter, QuestionFilterKeys } from "../../domain/dao/filter"
+import TrendingUpRounded from "@mui/icons-material/TrendingUpRounded"
+import { AnswerFilter, AnswerFilterKeys, OrderByFilter, QuestionFilter, QuestionFilterKeys, RelevanceFilter } from "../../domain/dao/filter"
 
 export type FilterSection<OptionValueType> = {
     title: string,
@@ -28,7 +29,7 @@ const answerVerificationSection: FilterSection<boolean | undefined> = {
     filter_key: "verified",
     options: [
         { title: "Verified", value: true },
-        { title: "Unverified", value: false, messageOnSelected: "Answers ould contain explicit or offensive content" },
+        { title: "Unverified", value: false, messageOnSelected: "Answers could contain explicit or offensive content" },
         { title: "All answers", value: undefined, messageOnSelected: "Answers could contain explicit or offensive content" },
     ]
 }
@@ -45,9 +46,20 @@ const questionVerificationSection: FilterSection<boolean | undefined> = {
     ]
 }
 
+const questionRelevanceSection: FilterSection<RelevanceFilter | undefined> = {
+    title: "Relevance",
+    icon: <TrendingUpRounded fontSize="small" />,
+    selectedOption: 0,
+    filter_key: "relevance",
+    options: [
+        { title: "Most Relevant", value: { by: "upvotes", order: "desc" } },
+        { title: "All Questions", value: undefined },
+    ]
+}
+
 
 export const answerFilterSections = [timeFilterSection, answerVerificationSection]
-export const questionFilterSections = [timeFilterSection, questionVerificationSection]
+export const questionFilterSections = [timeFilterSection, questionVerificationSection, questionRelevanceSection]
 
 export function sectionsToAnswerFilter(sections: typeof answerFilterSections, questionId: number): AnswerFilter {
     const filter: AnswerFilter = { question_id: questionId }
@@ -78,6 +90,10 @@ export function sectionsToQuestionFilter(sections: typeof questionFilterSections
                     break;
                 case "verified":
                     filter[section.filter_key] = section.options[section.selectedOption].value as boolean | undefined;
+                    break;
+                case "relevance":
+                    filter[section.filter_key] = section.options[section.selectedOption].value as RelevanceFilter | undefined;
+                    break;
             }
         }
     }

@@ -151,7 +151,7 @@ const BooksSection = (props: {
                                     <p className="text-sm">
                                         <span>Account : </span>
                                         <span className="font-semibold mr-2">{purchaseInfo.account}</span>
-                                        <span onClick={() => copyAccountNumber(purchaseInfo.account)} className="select-none text-xs hover:underline whitespace-nowrap">
+                                        <span onClick={() => copyAccountNumber(purchaseInfo.account)} className="select-none text-xs hover:active:underline whitespace-nowrap">
                                             <ContentCopy className="" fontSize="small" /> {copyText}
                                         </span>
                                     </p>
@@ -159,7 +159,7 @@ const BooksSection = (props: {
                                         <span>Name : </span>
                                         <span className="font-semibold">{purchaseInfo.name}</span>
                                     </p>
-                                    <a href={"tel://" + purchaseInfo.phone} className="select-none hover:bg-emerald-500 p-2 bg-emerald-600 rounded-lg my-4">
+                                    <a href={"tel://" + purchaseInfo.phone} className="select-none hover:active:bg-emerald-500 p-2 bg-emerald-600 rounded-lg my-4">
                                         <p className=" text-white text-center text-xs font-semibold">Reach Us For Confirmation</p>
                                     </a>
                                 </div>
@@ -195,7 +195,7 @@ const BookCard = (props: { book: BookInfo }) => {
                             <img className="object-cover" src={"." + details.cover} alt={details.title} />
                         </div>
                         <p className="text-xs text-white/70 font-light text-center mb-2">{props.book.edition} Edition</p>
-                        <a download={true} href={details.purchaseInfo ? undefined : '.' + details.link} onClick={details.purchaseInfo ? () => onPreOrderClicked(props.book) : undefined} className="mx-auto block text-sm text-white font-normal text-center hover:underline select-none">{details.purchaseInfo ? 'Pre Order' : 'Download'}</a>
+                        <a download={true} href={details.purchaseInfo ? undefined : '.' + details.link} onClick={details.purchaseInfo ? () => onPreOrderClicked(props.book) : undefined} className="mx-auto block text-sm text-white font-normal text-center hover:active:underline select-none">{details.purchaseInfo ? 'Pre Order' : 'Download'}</a>
                     </div>)
             }
 

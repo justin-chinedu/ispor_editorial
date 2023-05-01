@@ -17,12 +17,12 @@ export const RecentQuestions = () => {
     return (
         <>
             {
-                recents.state === "idle" && (recents.questions.length > 0) ?
+                recents.state === "idle" && (recents.data.length > 0) ?
                     <div className="w-full grow max-w-screen-sm">
                         <p className="text-sm text-slate-200 font-normal mb-6">Recently Approved Questions</p>
                         <div className="flex flex-col gap-y-4">
                             {
-                                recents.questions.map(q => <QuestionAnswerBubble key={q.id} question_or_answer={q} />)
+                                recents.data.map(q => <QuestionAnswerBubble key={q.id} question_or_answer={q} />)
                             }
                         </div>
                         <div className="flex justify-center">

@@ -9,8 +9,10 @@ import tail_answer from "../../assets/bubble_tail_answer.svg";
 import { Answer } from "../../domain/models/answer";
 import { useShowBottomSheet } from "../bottom_sheet/bottom_sheet";
 import { QuestionAnswers } from "../question_answers/question_answers";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { HashLink } from "react-router-hash-link";
+import { fetchNameFromLocal } from "../../core/utils";
+import { ReadMoreText } from "../read_more_text";
 
 export const QuestionAnswerBubble = ({ question_or_answer: qa, answerCount }: { question_or_answer: Question | Answer, answerCount?: number }) => {
     const date = new Date(qa.created_at)
@@ -21,6 +23,8 @@ export const QuestionAnswerBubble = ({ question_or_answer: qa, answerCount }: { 
 
     const { showBottomSheet, closeBottomSheet, isOpen } = useShowBottomSheet();
 
+    const username = fetchNameFromLocal();
+    const keywords = qa.keywords.filter((q) => q.toLocaleLowerCase() !== username?.toLocaleLowerCase());
     useEffect(() => {
         setShowAllKeywords(false)
     }, [isOpen])
@@ -51,17 +55,17 @@ export const QuestionAnswerBubble = ({ question_or_answer: qa, answerCount }: { 
                 <div className={" text-white/60 text-xs mb-3 flex " + (showAllKeywords ? "flex-col gap-y-2" : "justify-between")}>
                     <p>{qa.name}</p>
                     {/* Keywords */}
-                    {qa.keywords.length > 0 ?
+                    {keywords.length > 0 ?
                         <div onClick={(ev) => { ev.stopPropagation() }} className="flex flex-wrap gap-x-2 items-center gap-y-2">
                             {showAllKeywords ? "All keywords:" : "keywords:"}
 
                             {
-                                qa.keywords.slice(0, showAllKeywords ? 10 : 2).map(kw => (
-                                    <HashLink onClick={handleOnLinkClicked} to={`/anonymous?kw=${kw}`} key={kw} className={"select-none underline text-white " + (showAllKeywords ? "" : "overflow-hidden text-ellipsis max-w-[3.2rem]")}>{kw}</HashLink>
+                                keywords.slice(0, showAllKeywords ? 10 : 2).map(kw => (
+                                    <HashLink onClick={handleOnLinkClicked} to={`/anonymous?kw=${kw}`} key={kw} className={"select-none underline text-white " + (showAllKeywords ? "" : "overflow-hidden text-ellipsis max-w-[3.6rem]")}>{kw}</HashLink>
                                 ))
                             }
                             {
-                                qa.keywords.length <= 2 ? null : <button type="button" onClick={() => setShowAllKeywords(s => !s)} key={"more"} className="select-none underline text-white">{showAllKeywords ? "show less" : `+ ${qa.keywords.length - 2}`}</button>
+                                keywords.length <= 2 ? null : <button type="button" onClick={() => setShowAllKeywords(s => !s)} key={"more"} className="select-none underline text-white">{showAllKeywords ? "show less" : `+ ${keywords.length - 2}`}</button>
                             }
 
                         </div> :
@@ -92,41 +96,17 @@ export const QuestionAnswerBubble = ({ question_or_answer: qa, answerCount }: { 
                 </div>
             </div>
         </div>
-
-
     )
 }
 
 
-export const ReadMoreText = (props: { maxLines: number } & React.BaseHTMLAttributes<{}>) => {
-    const messageRef = useRef<HTMLParagraphElement | null>(null);
-    const [clampText, setClampText] = useState(false);
-    const [showMoreButton, setShowMoreButton] = useState(false);
-
-
-    useEffect(() => {
-        const p = messageRef.current;
-        if (p) {
-            const lines = p.getBoundingClientRect().height / 20;
-            if (lines > props.maxLines) {
-                setClampText(true);
-                setShowMoreButton(true);
-                p.style.webkitLineClamp = props.maxLines.toString()
-            }
-        }
-    }, [messageRef])
-
+export const QABubblePlaceHolder = ({ reverse }: { reverse?: boolean }) => {
     return (
-        <div className={props.className}>
-            <p ref={messageRef} className={"w-full text-sm text-ellipsis overflow-hidden " + (clampText ? "line-clamp-1" : "")}>{props.children}</p>
-            {
-                showMoreButton ?
-                    <button onClick={() => setClampText(v => !v)} type="button" className={"inline text-sm font-bold mt-2"}>{clampText ? "Show more" : "Show less"}</button>
-                    : null
-            }
+        <div className={"flex items-start " + (reverse ? "flex-row-reverse " : "flex-row  ")}>
+            {/* Bubble Tail */}
+            <img src={!reverse ? ('.' + tail) : ('.' + tail_answer)} alt="" className={(reverse ? "-rotate-90" : "")} />
+            <div className={"w-full h-24 text-sm  py-2 px-4 text-neutral-300 rounded-ee-xl rounded-es-xl " + (reverse ? "rounded-ss-xl bg-teal-900/70" : "rounded-se-xl bg-slate-700/50")}>
+            </div>
         </div>
-
     )
 }
-
-

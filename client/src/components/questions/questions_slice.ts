@@ -1,34 +1,34 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import questionDao from "../../domain/dao/questions_dao";
 import { QuestionFilter } from "../../domain/dao/filter";
 import { Question } from "../../domain/models/question";
 import { RootState } from "../../store";
 import { RequestType } from "../../core/request_state";
 
-type FetchState = 'idle' | 'fetching' | 'error'
-type UploadState = 'idle' | 'uploading' | 'error' | 'success'
+type FetchState = 'idle' | 'processing' | 'error'
+type UploadState = 'idle' | 'processing' | 'error' | 'success'
 
 type State = {
     //Questions State
     questions_count: number,
     questions_state: RequestType<Question[]>,
-    questions_first_run: boolean,
+    questions_filter: QuestionFilter
     //---------
     temp_questions: Question[], //User Temp Questions before verification
-    fetch_state: { state: FetchState, error?: string },
-    recents_state: { questions: Question[], state: FetchState, error?: string },
-    upload_state: { state: UploadState, error?: string },
+    fetch_state: RequestType<undefined>,
+    recents_state: RequestType<Question[]>,
+    upload_state: RequestType<undefined>,
 }
 
 const initialState: State = {
-    questions_count: 20,
-    questions_first_run: true,
-    fetch_state: { state: 'idle' },
+    questions_count: -1,
+    questions_filter: {},
+    fetch_state: { state: 'idle', data: undefined },
     questions_state: { state: 'idle', data: [] },
     recents_state: {
-        questions: [], state: 'idle'
+        data: [], state: 'idle'
     },
-    upload_state: { state: 'idle' },
+    upload_state: { state: 'idle', data: undefined },
     temp_questions: []
 }
 
@@ -49,10 +49,9 @@ export const fetchRecentQuestions = createAsyncThunk('question/fetch_recent', as
     }
 });
 
-export const fetchAllQuestions = createAsyncThunk<Question[], QuestionFilter, { state: RootState }>('question/fetch_all_questions', async (filter: QuestionFilter, thunkApi) => {
-
+export const fetchAllQuestions = createAsyncThunk<Question[], undefined, { state: RootState }>('question/fetch_all_questions', async (_, thunkApi) => {
     try {
-        const questions = (await questionDao.fetchQuestions(filter)) ?? [];
+        const questions = (await questionDao.fetchQuestions(thunkApi.getState().question.questions_filter)) ?? [];
         return questions;
     } catch (error) {
         return Promise.reject(error)
@@ -77,7 +76,7 @@ export const questionSlice = createSlice({
     initialState: initialState,
     extraReducers(builder) {
         builder.addCase(fetchCount.pending, (state) => {
-            state.fetch_state.state = "fetching"
+            state.fetch_state.state = "processing"
         }).addCase(fetchCount.fulfilled, (state, action) => {
             if (action.payload) {
                 state.questions_count = action.payload;
@@ -86,7 +85,7 @@ export const questionSlice = createSlice({
             state.fetch_state.error = action.error.message;
             state.fetch_state.state = "error";
         }).addCase(addQuestion.pending, (state) => {
-            state.upload_state.state = "uploading"
+            state.upload_state.state = "processing"
             state.upload_state.error = undefined;
         }).addCase(addQuestion.fulfilled, (state, action) => {
             state.questions_count += action.payload.result ?? 1;
@@ -99,10 +98,10 @@ export const questionSlice = createSlice({
         })
             //Recent Questions
             .addCase(fetchRecentQuestions.pending, (state) => {
-                state.recents_state.state = "fetching"
+                state.recents_state.state = "processing"
             }).addCase(fetchRecentQuestions.fulfilled, (state, action) => {
                 if (action.payload) {
-                    state.recents_state.questions = action.payload;
+                    state.recents_state.data = action.payload;
                     state.recents_state.state = "idle";
                     state.recents_state.error = undefined;
                 }
@@ -115,7 +114,7 @@ export const questionSlice = createSlice({
                 state.questions_state.state = "processing"
                 state.questions_state.error = undefined;
             }).addCase(fetchAllQuestions.fulfilled, (state, action) => {
-                const range = action.meta.arg.range;
+                const range = state.questions_filter.range;
                 const first_run = range?.from == 0;
 
                 if (action.payload && range && (range.to != state.questions_state.data.length)) { //raange must specify greater value before adding data
@@ -126,29 +125,31 @@ export const questionSlice = createSlice({
                     }
 
                 }
-
                 state.questions_state.state = "success"
                 state.questions_state.error = undefined;
-                state.questions_first_run = false;
             }).addCase(fetchAllQuestions.rejected, (state, action) => {
                 state.questions_state.error = action.error.message;
                 state.questions_state.state = "error"
             });
     },
-    reducers: {}
+    reducers: {
+        setFilter: (state, action: PayloadAction<QuestionFilter>) => {
+            state.questions_filter = action.payload;
+        }
+    }
 }
 );
 
 export const selectQuestionsCount = (state: RootState) => state.question.questions_count;
+export const selectQuestionsFilter = (state: RootState) => state.question.questions_filter;
 export const selectQuestionUploadState = (state: RootState) => state.question.upload_state;
 export const selectQuestionsFetchState = (state: RootState) => state.question.fetch_state;
 export const selectRecentsState = (state: RootState): typeof state.question.recents_state => ({
     ...state.question.recents_state,
-    questions: [...state.question.temp_questions, ...state.question.recents_state.questions] //Add temp questions
-});
-export const selectAllQuestionsState = (state: RootState): typeof state.question.questions_state => ({
-    ...state.question.questions_state,
-    data: [...state.question.temp_questions, ...state.question.questions_state.data] //Add temp questions
+    data: [...state.question.temp_questions, ...state.question.recents_state.data] //Add temp questions
 });
 
+export const selectAllQuestionsState = (state: RootState): typeof state.question.questions_state => state.question.questions_state;
+
+export const { setFilter } = questionSlice.actions;
 export default questionSlice.reducer;

@@ -18,8 +18,8 @@ export const SearchBar = (props: { searchText?: string, onSearchSubmit?: (text: 
 
     return (
         < div className="flex gap-x-2 items-center" >
-            <input onChange={handleSearchInput} value={searchText} className="min-w-[24px] bg-gray-700/60 appearance-none border border-transparent focus:border-primary-color/50 rounded-lg w-full py-3 px-2 text-primary-color placeholder:text-white/70 leading-tight focus:outline-none focus:shadow-outline text-xs" placeholder="Search for keyword" type="text" name="Search" id="search" title="Search" />
-            <button disabled={disabled} onClick={() => props.onSearchSubmit?.(searchText)} type="button" className={"bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg py-2 px-4 " + (disabled ? "opacity-60" : "")}>
+            <input onChange={handleSearchInput} value={searchText} className="min-w-[24px] bg-gray-700/20 appearance-none border border-transparent focus:border-primary-color/50 rounded-lg w-full py-3 px-2 text-neutral-600 placeholder:text-neutral-600 leading-tight focus:outline-none focus:shadow-outline text-xs" placeholder="Search for keyword or name" type="text" name="Search" id="search" title="Search" />
+            <button disabled={disabled} onClick={() => props.onSearchSubmit?.(searchText)} type="button" className={"bg-emerald-600 hover:active:bg-emerald-700 text-white rounded-lg py-2 px-4 " + (disabled ? "opacity-40" : "")}>
                 <p className="text-xs">Search</p>
             </button>
         </div>

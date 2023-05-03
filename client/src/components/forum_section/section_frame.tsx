@@ -13,18 +13,25 @@ export const ForumSectionFrame = () => {
     const sections = useFetchAllSectionsQuery(null);
     const forumSections = sections.data ?? [];
     const primarySections = forumSections.filter(s => s.parent == undefined);
-    const sectionsMap: Record<number, ForumSection[]> = {}
     const dispatch = useAppDispatch();
+    const sectionsMap: Record<number, ForumSection[]> = {}
     for (const p of primarySections) {
         sectionsMap[p.id] = [];
         sectionsMap[p.id] = sectionsMap[p.id].concat(...forumSections.filter(s => s.parent === p.id));
     }
 
-    const forumState = useSelector(selectForumState);
+    const forumState = useSelector(selectForumState) ?? [];
     const selectedPrimarySection = forumState.length > 0 ? primarySections.filter(p => p.id == forumState[0])[0] : primarySections[0];
-    const [primarySection, setSelectedPrimarySection] = useState(selectedPrimarySection);
-    const [subSection, setSelectedSubSection] = useState<ForumSection | null>(null);
+    const [primarySection, setSelectedPrimarySection] = useState<ForumSection | undefined>(undefined);
+    const [subSection, setSelectedSubSection] = useState<ForumSection | null>(forumSections.filter(x => x.parent !== undefined && x.parent == primarySection?.id)[0]);
 
+    useEffect(() => {
+        const firstId = primarySections[0]?.id
+        if (firstId && forumState.length == 0) {
+            setForumState([firstId]);
+            setSelectedPrimarySection(selectedPrimarySection)
+        }
+    }, [sections.data, forumState])
 
     useEffect(() => {
         const res: number[] = [];
@@ -34,7 +41,9 @@ export const ForumSectionFrame = () => {
         if (subSection) {
             res.push(subSection.id);
         }
-        dispatch(setForumState(res))
+        if (res.length > 0) {
+            dispatch(setForumState(res))
+        }
     }, [primarySection, subSection])
 
     if (!sections.data) {
@@ -47,14 +56,16 @@ export const ForumSectionFrame = () => {
     }
 
     const subSections = selectedPrimarySection ? sectionsMap[selectedPrimarySection.id] : [];
-    const selectedSubSection = forumState.length > 1 ? subSections.filter(p => p.id == forumState[1])[0] : subSections[0];
+    const selectedSubSection = subSection == null ? undefined : forumState.length > 1 ? subSections.filter(p => p.id == forumState[1])[0] : subSections[0];
 
 
     const handleSelect: React.ReactEventHandler<HTMLSelectElement> = (ev) => {
-        const value = ev.currentTarget.value;
-        const section = primarySections.filter(p => p.id.toString() === value)[0];
+        const value = Number.parseInt(ev.currentTarget.value);
+        const section = primarySections.filter(p => p.id == value)[0];
         if (section) {
             setSelectedPrimarySection(section);
+            const sub = forumSections.filter(x => x.parent == section.id)[0];
+            setSelectedSubSection(sub);
         }
     }
 
@@ -68,7 +79,7 @@ export const ForumSectionFrame = () => {
             <select value={selectedPrimarySection.id} onChange={handleSelect} className=" [&_option]:bg-card-dark [&_option]:text-xs outline-none p-0 bg-transparent focus:bg-transparent w-fit text-primary-color font-extrabold text-2xl" title="Forum Sections" name="Forum Sections" id="forum_sections">
                 {
                     primarySections.map((s) =>
-                        <option value={s.id}>{s.title}</option>
+                        <option key={s.id} value={s.id}>{s.title}</option>
                     )
                 }
             </select>
@@ -78,7 +89,7 @@ export const ForumSectionFrame = () => {
                 {
                     subSections.map(s => {
                         const isSelected = selectedSubSection ? selectedSubSection.id === s.id : false;
-                        return <button key={s.title} onClick={() => onSubSelected(s)} className={"text-white text-xs p-2 rounded-lg " + (isSelected ? "bg-emerald-600" : "bg-slate-600 opacity-60")} type="button">{s.title}</button>;
+                        return <button key={s.id} onClick={() => onSubSelected(s)} className={"text-white text-xs p-2 rounded-lg " + (isSelected ? "bg-emerald-600" : "bg-slate-600 opacity-60")} type="button">{s.title}</button>;
                     }
                     )
                 }
@@ -130,18 +141,16 @@ export const ForumSectionsForm = (props: { onChange: (section_ids: number[]) => 
     const subSections = selectedPrimarySection ? sectionsMap[selectedPrimarySection.id] : [];
 
     const handleSelect: React.ReactEventHandler<HTMLSelectElement> = (ev) => {
-        const value = ev.currentTarget.value;
-        const section = primarySections.filter(p => p.id.toString() === value)[0];
+        const value = Number.parseInt(ev.currentTarget.value);
+        const section = primarySections.filter(p => p.id == value)[0];
         if (section) {
             setSelectedPrimarySection(section);
         }
     }
     const handleSubSelect: React.ReactEventHandler<HTMLSelectElement> = (ev) => {
         const value = Number.parseInt(ev.currentTarget.value);
-        const section = subSections[value];
-        if (section) {
-            setSelectedSubSection(section);
-        }
+        const section = subSections.filter(x => x.id == value)[0];
+        setSelectedSubSection(section);
     }
     return (
         <div className="flex gap-x-4">
@@ -150,7 +159,7 @@ export const ForumSectionsForm = (props: { onChange: (section_ids: number[]) => 
                 <select onChange={handleSelect} className=" [&_option]:bg-card-dark [&_option]:text-xs outline-none p-0 bg-transparent focus:bg-transparent w-fit text-primary-color font-light text-sm" title="Forum Sections Input" name="Forum Sections Input" id="forum_sections_input">
                     {
                         primarySections.map((s) =>
-                            <option value={s.id}>{s.title}</option>
+                            <option key={s.id} value={s.id}>{s.title}</option>
                         )
                     }
                 </select>
@@ -162,7 +171,7 @@ export const ForumSectionsForm = (props: { onChange: (section_ids: number[]) => 
                         <option value={-1}>{"none"}</option>
                         {
                             subSections.map((s) =>
-                                <option value={s.id}>{s.title}</option>
+                                <option key={s.id} value={s.id}>{s.title}</option>
                             )
                         }
                     </select>

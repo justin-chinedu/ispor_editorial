@@ -64,7 +64,9 @@ export const AnswerForm = (props: { answerFilter: AnswerFilter, question: Questi
             answer: answer.trim(),
             name: username,
             keywords: [],
-            question_id: props.question.id!
+            question_id: props.question.id!,
+            upvotes: 0,
+            downvotes: 0
         })).then(
             () => dispatch(fetchAnswersForQuestion(props.answerFilter))
         );

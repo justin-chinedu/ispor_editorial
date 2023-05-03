@@ -8,7 +8,7 @@ import { extractKeyword as extractKeywords, jprint } from "../../core/utils";
 
 interface QuestionDaoI {
     addQuestion(question: Question): Promise<number | PostgrestError | null>;
-    updateQuestion(question: Question): Promise<Question | PostgrestError>;
+    updateQuestion(question: Question): Promise<Question>;
     upvoteQuestion(question: Question, increase: boolean): Promise<Question>;
     downvoteQuestion(question: Question, increase: boolean): Promise<Question>;
     fetchCount(): Promise<number | null>;
@@ -18,6 +18,7 @@ interface QuestionDaoI {
 
 let i = 60;
 class QuestionDao implements QuestionDaoI {
+
 
     async upvoteQuestion(question: Question, increase: boolean): Promise<Question> {
         const { data, error } = await client.rpc('upvote_question', { question_id: question.id!, increase: increase })
@@ -37,9 +38,10 @@ class QuestionDao implements QuestionDaoI {
         }
     }
 
-    async updateQuestion(question: Question): Promise<Question | PostgrestError> {
+    async updateQuestion(question: Question): Promise<Question> {
         const resp = await client.from('questions')
             .update(question)
+            .eq('id', question.id!)
             .select<"*", Question>('*')
             .single();
 
@@ -72,12 +74,11 @@ class QuestionDao implements QuestionDaoI {
     }
 
     applyFilter(builder: PostgrestFilterBuilder<GenericSchema, Record<QuestionColumns, QuestionValues>, Question[]>, filter: QuestionFilter) {
-
         if (filter.verified !== undefined) {
             builder = builder.eq("verified", filter.verified);
         }
 
-        if (filter.section_ids && filter.section_ids.length > 0) {
+        if (filter.section_ids && filter.section_ids.length > 0  && filter.keyword == undefined) {
             builder = builder.in("section_id", filter.section_ids);
         }
 

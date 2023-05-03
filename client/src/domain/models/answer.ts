@@ -5,7 +5,9 @@ export interface Answer {
     verified?: boolean,
     keywords: string[]
     question_id: number
-    id?: number
+    id?: number,
+    upvotes: number,
+    downvotes: number,
 }
 
 export const mockAnswers: Answer[] = [
@@ -17,7 +19,9 @@ export const mockAnswers: Answer[] = [
         answer: "Exercitation incididunt nulla eiusmod qui dolore in ad. Mollit fugiat in fugiat proident. Velit officia excepteur sunt laborum enim id pariatur id qui minim dolor. Officia quis tempor fugiat qui consectetur nisi labore magna. Fugiat labore non mollit labore Lorem sunt laboris. Labore minim laborum eiusmod sunt veniam et. Ad aute deserunt sit duis occaecat reprehenderit consequat cupidatat.",
         keywords: [],
         verified: true,
-        question_id: 2
+        question_id: 2,
+        upvotes: 0,
+        downvotes: 0
     },
 
     {
@@ -27,7 +31,9 @@ export const mockAnswers: Answer[] = [
         answer: "My Test Answer",
         keywords: [],
         verified: true,
-        question_id: 2
+        question_id: 2,
+        upvotes: 0,
+        downvotes: 0
     },
     {
         id: 14,
@@ -36,7 +42,9 @@ export const mockAnswers: Answer[] = [
         answer: "Exercitation incididunt nulla eiusmod qui dolore in ad. Mollit fugiat in fugiat proident. Velit officia excepteur sunt laborum enim id pariatur id qui minim dolor. Officia quis tempor fugiat qui consectetur nisi labore magna. Fugiat labore non mollit labore Lorem sunt laboris. Labore minim laborum eiusmod sunt veniam et. Ad aute deserunt sit duis occaecat reprehenderit consequat cupidatat.",
         keywords: [],
         verified: true,
-        question_id: 2
+        question_id: 2,
+        upvotes: 0,
+        downvotes: 0
     },
 
 ]

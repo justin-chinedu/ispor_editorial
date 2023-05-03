@@ -1,6 +1,6 @@
 import { Question } from "../../domain/models/question";
 import { useAppDispatch } from "../../store";
-import { fetchAnswersForQuestion, setUpQuestion } from "./question_answers_slice";
+import { fetchAnswersForQuestion, setUpQuestion, updateQuestion } from "./question_answers_slice";
 import { useEffect, useState } from "react";
 import { QABubblePlaceHolder, QuestionAnswerBubble } from "../questions/question_answer_bubble";
 import InfoRounded from "@mui/icons-material/InfoRounded";
@@ -12,9 +12,14 @@ import { answerFilterSections, sectionsToAnswerFilter } from "../filters/filters
 import { FilterFrame } from "../filters/filter_frame";
 import { FilterButton } from "../filters/filter_button";
 import { useQuestionSelector } from "../../hooks/question_hooks";
-import { VoteButtons } from "./vote_buttons";
+import { VoteAnswerButtons, VoteButtons } from "./vote_buttons";
+import { useGetUser } from "../auth/auth_api";
+import { jprint } from "../../core/utils";
 
 export const QuestionAnswers = ({ question }: { question: Question }) => {
+    const userState = useGetUser();
+    const is_mod: boolean = userState.data?.app_metadata?.claims_admin == true;
+
     const dispatch = useAppDispatch();
     const perPage = 10;
     const [range, setRange] = useState<RangeFilter>({ from: 0, to: perPage })
@@ -26,6 +31,7 @@ export const QuestionAnswers = ({ question }: { question: Question }) => {
     const answersFilter = { range, ...sectionsToAnswerFilter(filterSections, question.id!) }
 
     const questionState = useQuestionSelector(question);
+    question = questionState?.question ?? question;
 
     useEffect(() => {
         if (questionState == undefined) {
@@ -53,13 +59,28 @@ export const QuestionAnswers = ({ question }: { question: Question }) => {
     const verificationSection = filterSections.filter(s => s.filter_key == "verified").pop();
     const verificationText = verificationSection?.options[verificationSection.selectedOption].title;
 
+    function handleVerifyQuestion() {
+        if (question.verified) {
+            dispatch(updateQuestion({ ...question, verified: false }))
+        } else {
+            dispatch(updateQuestion({ ...question, verified: true }))
+        }
+    }
 
     return (
         <div className="relative h-full flex flex-col gap-y-4">
 
+            {is_mod &&
+                <h2 className="self-center text-white/60 text-sm font-semibold">You're a Moderator</h2>
+            }
             <h2 className="text-white text-xs font-light">Question</h2>
             {/* Question */}
             <QuestionAnswerBubble answerCount={answers.length} question_or_answer={question} />
+            {/* Verification for mods */}
+            {
+                is_mod &&
+                <button onClick={handleVerifyQuestion} className={"w-fit self-end rounded-lg p-2 px-4 text-xs text-white " + (question.verified ? "bg-red-600/70 " : "bg-emerald-600")} type="button">{question.verified ? "UnVerify Question" : "Verify Question"}</button>
+            }
 
             {/* Vote and Answer Buttons */}
             <div className="flex justify-end gap-x-4 text-white items-center">
@@ -70,6 +91,7 @@ export const QuestionAnswers = ({ question }: { question: Question }) => {
                     <p className="text-[12px]">{formIsVisible ? "Show Answers" : "Answer Question"}</p>
                 </button>
             </div>
+
 
             {/*All Answers */}
             {
@@ -99,8 +121,15 @@ export const QuestionAnswers = ({ question }: { question: Question }) => {
 
                                         {/* Answers list */}
                                         {answersIsNotEmpty ?
-                                            answers.map(a => <QuestionAnswerBubble key={a.id} question_or_answer={a} />)
-                                            : <p className="my-4 text-white text-center">No {verificationText ?? ""} Answers</p>
+                                            answers.map(a => (
+                                                <div key={a.id} className="flex justify-end items-center gap-x-4 mb-6">
+                                                    <VoteAnswerButtons answer={a} question={question} />
+                                                    <div className="grow">
+                                                        <QuestionAnswerBubble question_or_answer={a} />
+                                                    </div>
+                                                </div>)
+                                            )
+                                            : <p className="my-4 whitespace-break-spaces text-white text-center">{"No answers yet \nTry changing filter settings"}</p>
                                         }
                                     </div>
                                     :

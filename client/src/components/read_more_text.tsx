@@ -20,7 +20,7 @@ export const ReadMoreText = (props: { maxLines: number } & React.BaseHTMLAttribu
 
     return (
         <div className={props.className}>
-            <p ref={messageRef} className={"w-full text-sm text-ellipsis overflow-hidden " + (clampText ? "line-clamp-1" : "")}>{props.children}</p>
+            <p ref={messageRef} className={"w-full whitespace-break-spaces text-sm text-ellipsis overflow-hidden " + (clampText ? "line-clamp-1" : "")}>{props.children}</p>
             {
                 showMoreButton ?
                     <button onClick={() => setClampText(v => !v)} type="button" className={"inline text-sm font-bold mt-2"}>{clampText ? "Show more" : "Show less"}</button>

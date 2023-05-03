@@ -7,6 +7,7 @@ import { QuestionsCount } from "../../components/questions/questions_count";
 import { RecentQuestions } from "../../components/questions/recent_questions";
 import { mockQuestions } from "../../domain/models/question";
 import { QuestionsList } from "../../components/questions/questions_list";
+import { AuthForm } from "../../components/auth/auth_forms";
 
 export const Home = () => {
     return (

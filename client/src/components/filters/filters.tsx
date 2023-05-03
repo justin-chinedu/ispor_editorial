@@ -25,7 +25,7 @@ const timeFilterSection: FilterSection<OrderByFilter> = {
 const answerVerificationSection: FilterSection<boolean | undefined> = {
     title: "Verification",
     icon: <VerifiedRounded fontSize="small" />,
-    selectedOption: 0,
+    selectedOption: 2,
     filter_key: "verified",
     options: [
         { title: "Verified", value: true },
@@ -57,8 +57,19 @@ const questionRelevanceSection: FilterSection<RelevanceFilter | undefined> = {
     ]
 }
 
+const answerRelevanceSection: FilterSection<RelevanceFilter | undefined> = {
+    title: "Relevance",
+    icon: <TrendingUpRounded fontSize="small" />,
+    selectedOption: 0,
+    filter_key: "relevance",
+    options: [
+        { title: "Most Relevant", value: { by: "upvotes", order: "desc" } },
+        { title: "All Questions", value: undefined },
+    ]
+}
 
-export const answerFilterSections = [timeFilterSection, answerVerificationSection]
+
+export const answerFilterSections = [timeFilterSection, answerVerificationSection, questionRelevanceSection]
 export const questionFilterSections = [timeFilterSection, questionVerificationSection, questionRelevanceSection]
 
 export function sectionsToAnswerFilter(sections: typeof answerFilterSections, questionId: number): AnswerFilter {
@@ -72,6 +83,10 @@ export function sectionsToAnswerFilter(sections: typeof answerFilterSections, qu
                     break;
                 case "verified":
                     filter[section.filter_key] = section.options[section.selectedOption].value as boolean | undefined;
+                    break;
+                case "relevance":
+                    filter[section.filter_key] = section.options[section.selectedOption].value as RelevanceFilter | undefined;
+                    break;
             }
         }
     }

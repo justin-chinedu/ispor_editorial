@@ -6,6 +6,7 @@ import { questionAnswersSlice } from "./components/question_answers/question_ans
 import { answerFormSlice } from "./components/answers/answer_form_slice";
 import forumSectionApi from "./components/forum_section/forum_section_api";
 import { sectionSLice } from "./components/forum_section/section_slice";
+import authApi from "./components/auth/auth_api";
 
 export const store = configureStore({
     reducer: {
@@ -14,8 +15,9 @@ export const store = configureStore({
         answer_form: answerFormSlice.reducer,
         section_slice: sectionSLice.reducer,
         [forumSectionApi.reducerPath]: forumSectionApi.reducer,
+        [authApi.reducerPath]: authApi.reducer,
     },
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(forumSectionApi.middleware),
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(forumSectionApi.middleware, authApi.middleware),
 })
 
 export type RootState = ReturnType<typeof store.getState>;

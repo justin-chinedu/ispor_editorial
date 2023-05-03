@@ -4,6 +4,7 @@ import { QuestionFilter } from "../../domain/dao/filter";
 import { Question } from "../../domain/models/question";
 import { RootState } from "../../store";
 import { RequestType } from "../../core/request_state";
+import { jprint } from "../../core/utils";
 
 type FetchState = 'idle' | 'processing' | 'error'
 type UploadState = 'idle' | 'processing' | 'error' | 'success'
@@ -51,7 +52,11 @@ export const fetchRecentQuestions = createAsyncThunk('question/fetch_recent', as
 
 export const fetchAllQuestions = createAsyncThunk<Question[], undefined, { state: RootState }>('question/fetch_all_questions', async (_, thunkApi) => {
     try {
-        const questions = (await questionDao.fetchQuestions(thunkApi.getState().question.questions_filter)) ?? [];
+        const filter = thunkApi.getState().question.questions_filter;
+        if (filter.section_ids?.length == 0) {
+            return []
+        }
+        const questions = (await questionDao.fetchQuestions(filter)) ?? [];
         return questions;
     } catch (error) {
         return Promise.reject(error)
@@ -117,7 +122,7 @@ export const questionSlice = createSlice({
                 const range = state.questions_filter.range;
                 const first_run = range?.from == 0;
 
-                if (action.payload && range && (range.to != state.questions_state.data.length)) { //raange must specify greater value before adding data
+                if (action.payload && range) { //raange must specify greater value before adding data
                     if (first_run) { //Append to questions is range is used and is not first run
                         state.questions_state.data = [...action.payload];
                     } else { //Reset questions if range is not used

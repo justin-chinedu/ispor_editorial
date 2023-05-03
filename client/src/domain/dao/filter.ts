@@ -13,7 +13,8 @@ export type AnswerFilter = {
     order_by?: OrderByFilter,
     keyword?: KeywordFilter,
     verified?: boolean,
-    question_id: number
+    question_id: number,
+    relevance?: RelevanceFilter
 }
 
 export type AnswerFilterKeys = keyof AnswerFilter;
@@ -28,7 +29,7 @@ export type QuestionFilter = {
     keyword?: KeywordFilter,
     verified?: boolean,
     relevance?: RelevanceFilter
-    section_ids ?: number[]
+    section_ids?: number[]
 }
 
 export type QuestionFilterKeys = keyof QuestionFilter;

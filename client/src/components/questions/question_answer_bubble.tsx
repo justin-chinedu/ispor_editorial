@@ -52,8 +52,8 @@ export const QuestionAnswerBubble = ({ question_or_answer: qa, answerCount }: { 
             <img src={isQuestion ? ('.' + tail) : ('.' + tail_answer)} alt="" className={(reverse ? "-rotate-90" : "")} />
             <div className={"w-full h-fit text-sm  py-2 px-4 text-neutral-300 rounded-ee-xl rounded-es-xl " + (reverse ? "rounded-ss-xl bg-teal-900/70" : "rounded-se-xl bg-slate-700/50")}>
                 {/* Message Author & Keywords*/}
-                <div className={" text-white/60 text-xs mb-3 flex " + (showAllKeywords ? "flex-col gap-y-2" : "justify-between")}>
-                    <p>{qa.name}</p>
+                <div className={" text-white/60 text-xs mb-3 flex-col"}>
+                    <p className="text-primary-color mb-2">{qa.name}</p>
                     {/* Keywords */}
                     {keywords.length > 0 ?
                         <div onClick={(ev) => { ev.stopPropagation() }} className="flex flex-wrap gap-x-2 items-center gap-y-2">
@@ -61,7 +61,7 @@ export const QuestionAnswerBubble = ({ question_or_answer: qa, answerCount }: { 
 
                             {
                                 keywords.slice(0, showAllKeywords ? 10 : 2).map(kw => (
-                                    <HashLink onClick={handleOnLinkClicked} to={`/anonymous?kw=${kw}`} key={kw} className={"select-none underline text-white " + (showAllKeywords ? "" : "overflow-hidden text-ellipsis max-w-[3.6rem]")}>{kw}</HashLink>
+                                    <HashLink onClick={handleOnLinkClicked} to={`/anonymous?kw=${kw}`} key={kw} className={"select-none underline text-white " + (showAllKeywords ? "" : "overflow-hidden text-ellipsis ")}>{kw}</HashLink>
                                 ))
                             }
                             {
@@ -85,7 +85,7 @@ export const QuestionAnswerBubble = ({ question_or_answer: qa, answerCount }: { 
                     {/* Answer Count */}
                     {answerCount ?
                         <>
-                            <span className="text-white">{answerCount} answers</span>
+                            <span className="text-white">{`${answerCount} answer${answerCount > 1 ? "s" : ""}`}</span>
                             <span className="text-white"><MarkEmailRead fontSize="small" /></span>
                             <div className="mx-2 inline w-0.5 h-4 bg-white/40" />
                         </> : null

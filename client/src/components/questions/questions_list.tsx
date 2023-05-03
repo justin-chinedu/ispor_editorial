@@ -29,7 +29,9 @@ export const QuestionsList = () => {
 
     useEffect(() => {
         const f = { ...sectionsToQuestionFilter(filterSections), range: { from: 0, to: perPage }, keyword: keyword, section_ids: forumState }
-        dispatch(setFilter(f));
+        if (forumState.length > 0) {
+            dispatch(setFilter(f));
+        }
     }, [filterSections, keyword, forumState])
 
     useEffect(() => {

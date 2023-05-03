@@ -1,11 +1,12 @@
-import { ActionReducerMapBuilder, PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Answer } from "../../domain/models/answer"
 import { Question } from "../../domain/models/question"
 import answersDao from "../../domain/dao/answers_dao";
 import { AnswerFilter } from "../../domain/dao/filter";
-import { RequestState, RequestType } from "../../core/request_state";
+import { RequestType } from "../../core/request_state";
 import { deleteVotedQuestionFromLocal, fetchVotedQuestionsFromLocal, jprint, saveVotedQuestionToLocal } from "../../core/utils";
 import questionDao from "../../domain/dao/questions_dao";
+import { VoteData } from "../../domain/models/user/user_meta";
 
 type QuestionState = {
     question?: Question,
@@ -14,7 +15,7 @@ type QuestionState = {
 }
 
 type State = {
-    [QuestionId in number]: QuestionState
+    [QuestionId: number]: QuestionState
 }
 
 const initialState: State = {};
@@ -28,30 +29,61 @@ export const fetchAnswersForQuestion = createAsyncThunk('question_answers/fetch_
     }
 });
 
-export const voteQuestion = createAsyncThunk('question_answers/vote_question', async (arg: { question: Question, isUpvote: boolean }, thunkApi) => {
+export const updateQuestion = createAsyncThunk('question_answers/update_question', async (question: Question, thunkApi) => {
     try {
-        const saved = fetchVotedQuestionsFromLocal();
+        const q = await questionDao.updateQuestion(question);
+        return q;
+    } catch (error) {
+        return Promise.reject(error)
+    }
+});
+
+export const voteQuestion = createAsyncThunk('question_answers/vote_question', async (arg: { question: Question, isUpvote: boolean, votes: VoteData }, thunkApi) => {
+    try {
+        const votes = arg.votes;
+
         const id = arg.question.id!;
         let q: Question;
+
         if (arg.isUpvote) {
-            if (saved.upvoted.includes(id)) {
+            if (votes.upvoted.includes(id)) {
                 q = await questionDao.upvoteQuestion(arg.question, false);
-                deleteVotedQuestionFromLocal(id, true);
             } else {
                 q = await questionDao.upvoteQuestion(arg.question, true);
-                saveVotedQuestionToLocal(id, true);
             }
         } else {
-            if (saved.downvoted.includes(id)) {
+            if (votes.downvoted.includes(id)) {
                 q = await questionDao.downvoteQuestion(arg.question, false);
-                deleteVotedQuestionFromLocal(id, false);
             } else {
                 q = await questionDao.downvoteQuestion(arg.question, true);
-                saveVotedQuestionToLocal(id, false);
             }
         }
-        jprint(q)
         return q;
+    } catch (error) {
+        return Promise.reject(error)
+    }
+});
+
+export const voteAnswer = createAsyncThunk('question_answers/vote_answer', async (arg: { answer: Answer, isUpvote: boolean, votes: VoteData }, thunkApi) => {
+    try {
+        const votes = arg.votes;
+        
+        const id = arg.answer.id!;
+        let a: Answer;
+        if (arg.isUpvote) {
+            if (votes.upvoted.includes(id)) {
+                a = await answersDao.upvoteAnswer(arg.answer, false);
+            } else {
+                a = await answersDao.upvoteAnswer(arg.answer, true);
+            }
+        } else {
+            if (votes.downvoted.includes(id)) {
+                a = await answersDao.downvoteAnswer(arg.answer, false);
+            } else {
+                a = await answersDao.downvoteAnswer(arg.answer, true);
+            }
+        }
+        return a;
     } catch (error) {
         return Promise.reject(error)
     }
@@ -81,7 +113,6 @@ export const questionAnswersSlice = createSlice(
                 s.answers_state.error = undefined;
             }).addCase(fetchAnswersForQuestion.rejected, (state, action) => {
                 const questionId = action.meta.arg.question_id;
-                jprint(action.error.message)
                 const s = state[questionId];
                 s.answers_state.state = "error";
                 s.answers_state.error = action.error.message;
@@ -101,6 +132,16 @@ export const questionAnswersSlice = createSlice(
                 if (s) {
                     s.question = action.payload;
                 }
+            }).addCase(voteAnswer.fulfilled, (state, action) => {
+                const a = action.payload;
+                const s = state[action.payload.question_id!];
+                s.answers_state.data = s.answers_state.data.map(x => x.id == a.id ? a : x);
+            }).addCase(updateQuestion.fulfilled, (state, action) => {
+                const s = state[action.payload.id!];
+                if (s) {
+                    s.question = action.payload;
+                }
+            }).addCase(updateQuestion.rejected, (state, action) => {
             });
         }
     }
